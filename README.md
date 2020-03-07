@@ -22,7 +22,20 @@ Lightweight python library for controlling UR5 robot from Universal Robot family
 # velocity-based controller, move to pose goal [x,y,z,rx,ry,rz]
 >>> pose = np.array([0.470, -0.491, 0.430, 0.13, 3.15, -0.00])
 >>> rtc.move_v(pose)
+
+
+# kinematic test
+>>> from kinematics import KinematicsUR5
+>>> from math_tools import pose2tf
+>>> kin = KinematicsUR5()
+>>> target_ee = np.array([-1.10586325e-01, -4.86899999e-01,  4.31871547e-01, -1.36273738e-01, -3.12118227e+00,  1.18929713e-03])
+>>> target_pose = pose2tf(target_ee)
+>>> solutions = kin.inv_kin(target_pose)
+>>> closest_solution = kin.get_closest_solution(solutions, rtc.get_feedback('joint_values'))
+>>> rtc.move_j(closest_solution)
+>>> assert np.allclose(rtc.get_feedback('tool_pose'), target_ee)
+
 >>> rtc.close_connection()
 
-# kinematics
+
 ```
